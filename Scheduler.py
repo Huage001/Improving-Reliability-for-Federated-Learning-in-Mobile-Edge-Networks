@@ -1,22 +1,19 @@
 from DeviceManager import DeviceManager
-from EdgeManager import EdgeManager
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
 import copy
 
 #----------Constant----------#
 
-# Number of decision time
-totalTime=2
-
 # Learning Model Size
 modelSize=1
 
 # Number of device
-allDeviceNum=10
+allDeviceNum=0
 
 # Number of Edge
-edgeNum=10
+edgeNum=1
 
 # Ratio of Selected Data
 ratio=1
@@ -24,10 +21,10 @@ ratio=1
 #---------Other Variable---------#
 
 # All Devices, the corresponding variables are in its class
-devices=DeviceManager(allDeviceNum)
+devices=None
 
 # All Edges, the corresponding variables are in its class
-edges=EdgeManager(edgeNum)
+#edges=EdgeManager(edgeNum)
 # Note that we have a virtual edge
 edgeNum=edgeNum+1
 
@@ -38,17 +35,8 @@ def choiceConstrain(x):
     # Transform vector x into a matrix with the same shape as the decision variable
     y=copy.deepcopy(x)
     indicator=y.reshape((deviceNum,edgeNum))
-    # Note that the operator is >=, and that we should calculate sum for each row, so axis=1
+    # Note that we should calculate sum for each row, so axis=1
     return np.sum(indicator,axis=1)-1
-
-# The number of Devices who choose the same Edge cannot be larger than its User Capacity
-def bandWidthConstrain(x):
-    # The formation is similar to the function above
-    y=copy.deepcopy(x)
-    indicator=y.reshape((deviceNum,edgeNum))
-    indicator[:,edgeNum-1]=np.zeros(deviceNum)
-    userCapacity=edges.getAllUserCapacity()
-    return userCapacity[0:edgeNum]-np.sum(indicator,axis=0)
 
 def dataAmountConstrain(x):
     # The formation is similar to the function above
@@ -63,9 +51,16 @@ def dataAmountConstrain(x):
 # Total Constrain Function
 def constrainFunction():
     cons = ({'type':'eq','fun':choiceConstrain},
-            {'type':'ineq','fun':bandWidthConstrain},
             {'type':'ineq','fun':dataAmountConstrain})
     return cons
+
+#---------------Function of transmit error rate with number of connections at the same time-----------------#
+
+def transmitErrorRate(num):
+    a=28.512476594629344
+    b=33.1089283946605
+    c=10.797872012316573
+    return a / (b + np.exp(c-num/1000))
 
 #---------------Objective Function----------------#
 
@@ -74,25 +69,22 @@ def objectiveFunction(x):
     indicator=y.reshape((deviceNum,edgeNum))
     # Note that we should not include the virtual edge
     indicator[:,edgeNum-1]=np.zeros(deviceNum)
-    # a vector with dimension edgeNum
-    transmitDelay=edges.getTransmitDelay()
     # a vector with dimension deviceNum
-    computeDelay=devices.getComputeDelay()
+    errorRate=devices.getErrorRate()
     # a vector with dimension deviceNum
     dataSize=devices.getDataSize()
-    # We put the total transmit time of all edges into allLoad, which is
-    # the sum of each column of our decision variable multiplies corresponding
-    # transmitDelay. Therefore, we get a vector with dimension edgeNum
-    allLoad=(np.sum(indicator,axis=0))*transmitDelay*modelSize
+    # The sum of each column is the number of connections of each edge.
+    # Therefore, we get a vector with dimension edgeNum
+    allTransmitErrorRate=transmitErrorRate(np.sum(indicator,axis=0))
     # result[j][i] means the total time, including computing and transmitting,
     # on the condition that the device j choose edge i
     result=np.zeros((deviceNum,edgeNum))
     for j in range(deviceNum):
         for i in range(edgeNum):
-            result[j][i]=(allLoad[i]+computeDelay[j]*dataSize[j])*indicator[j][i]
-    # calculating the sum means we want the overall needed time of the device j
+            result[j][i]=(errorRate[j]+(1-errorRate[j])*allTransmitErrorRate[i])*indicator[j][i]
+    # calculating the sum means we want the overall error rate of the device j
     result=np.sum(result,axis=1)
-    # At last, the max time of all device means the final time
+    # At last, the max error rate of all device means the final error rate
     return np.max(result)
 
 #----------------Rounding Process---------------#
@@ -105,10 +97,10 @@ def rounding(x):
     res=np.zeros(x.shape)
     for j in range(x.shape[0]):
         cur=0
-        probility=np.random.uniform(0,1,1)
+        probability=np.random.uniform(0,1,1)
         for i in range(x.shape[1]):
             cur+=x[j][i]
-            if cur>=probility:
+            if cur>=probability:
                 res[j][i]=1
                 break
     return res
@@ -118,9 +110,30 @@ def rounding(x):
 # Output file
 f=open("result.txt", "w")
 
-for t in range(totalTime):
+# time information
+timeInformation=[]
+
+# error rate information
+errorRateInformation=[]
+
+# device number information
+deviceNumInformation=[]
+with open("input.txt") as file_object:
+    for val in file_object.read().split():
+        deviceNumInformation.append(int(val))
+
+for t in range(len(deviceNumInformation)):
 
     print("Decision time %d"%t,file=f)
+    timeInformation.append(t)
+
+    # Read allDeviceNum from input.txt
+    allDeviceNum=deviceNumInformation[t]
+    if allDeviceNum==0:
+        errorRateInformation.append(0)
+        continue
+
+    devices=DeviceManager(allDeviceNum)
 
     # Prepare for the optimizer
     devices.setDataSizeDistribution()
@@ -144,12 +157,12 @@ for t in range(totalTime):
     print('isAvail',end=' ',file=f)
     print(isAvail,file=f)
 
-    # print(optimizeResult)
-    # print(optimizeResult.fun)
     # print(choice)
     # print(optimizeResult.message)
-    print('Success: ',file=f)
+    print('Success:',end=' ',file=f)
     print(optimizeResult.success,file=f)
+    print(optimizeResult.fun,file=f)
+    errorRateInformation.append(optimizeResult.fun)
 
     # call rounding function
     choice=rounding(choice)
@@ -168,3 +181,10 @@ for t in range(totalTime):
     print('FINAL DECISION:',file=f)
     print(finalDecision,file=f)
     print('\n')
+
+plt.scatter(timeInformation, deviceNumInformation)
+plt.show()
+plt.scatter(deviceNumInformation,errorRateInformation)
+plt.show()
+plt.plot(timeInformation,errorRateInformation)
+plt.show()

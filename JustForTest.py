@@ -43,7 +43,7 @@ if __name__ == "__main__":
     print(np.random.rand(20))
 
 
-'''
+
 # b=np.zeros(3)
 # a=np.zeros((2,3))
 # for i in range(a.shape[0]):
@@ -59,4 +59,9 @@ b = np.array([1,0,1,0])
 a= a[b.astype(bool)]
 print(a)
 
-
+'''
+import matplotlib.pyplot as plt
+a=[1,3,5,7]
+b=[2,4,6,8]
+plt.scatter(a,b)
+plt.show()
