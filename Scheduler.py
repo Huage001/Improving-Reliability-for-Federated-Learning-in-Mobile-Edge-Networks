@@ -2,6 +2,7 @@ from DeviceManager import DeviceManager
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
+from scipy.optimize import linprog
 import copy
 
 #----------Constant----------#
@@ -16,17 +17,33 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-ratio=1
+ratio=0.5
 
 #---------Other Variable---------#
 
 # All Devices, the corresponding variables are in its class
 devices=None
 
-# All Edges, the corresponding variables are in its class
-#edges=EdgeManager(edgeNum)
 # Note that we have a virtual edge
 edgeNum=edgeNum+1
+
+# enumerate the number of selected devices
+selectDeviceNum=0
+
+# Output file
+f=open("result.txt", "w")
+
+# time information
+timeInformation=[]
+
+# error rate information
+errorRateInformation=[]
+
+# device number information
+deviceNumInformation=[]
+with open("input.txt") as file_object:
+    for val in file_object.read().split():
+        deviceNumInformation.append(int(val))
 
 #---------Constrain Function--------#
 
@@ -62,7 +79,7 @@ def transmitErrorRate(num):
     c=10.797872012316573
     return a / (b + np.exp(c-num/1000))
 
-#---------------Objective Function----------------#
+#---------------Convex Optimization Objective Function----------------#
 
 def objectiveFunction(x):
     y=copy.deepcopy(x)
@@ -89,7 +106,7 @@ def objectiveFunction(x):
 
 #----------------Rounding Process---------------#
 
-def rounding(x):
+def roundingForConvex(x):
     '''
     :param x: a matrix with dimension deviceNum x edgeNum
     :return: rounding each row so that every row has and only has one 1 and others are 0
@@ -105,41 +122,43 @@ def rounding(x):
                 break
     return res
 
-#-----------------Main Process------------------#
+def roundingForLinear(x):
+    '''
+    :param x: a vector with deviceNum mansions with value from [0,1]
+    :return:
+    '''
+    res=np.zeros(x.shape)
+    for i in range(x.shape[0]):
+        randomNum=np.random.random()
+        if randomNum<x[i]:
+            res[i]=1
+        else:
+            res[i]=0
+    return res
 
-# Output file
-f=open("result.txt", "w")
+#---------------Get final decisions-----------------#
 
-# time information
-timeInformation=[]
+def getFinalDecision(choice):
+    '''
+    Final Decision, need to merge choice from optimizer
+    and unavailable devices which choices are always the virtual edge
+    :return: None, just output results to a file
+    '''
+    finalDecision=np.zeros((allDeviceNum,edgeNum))
+    index=0
+    for j in range(allDeviceNum):
+        if isAvail[j]==True:
+            finalDecision[j]=choice[index]
+            index+=1
+        else:
+            finalDecision[j]=np.zeros(edgeNum)
+            finalDecision[j][edgeNum-1]=1
+    print('FINAL DECISION:',file=f)
+    print(finalDecision,file=f)
+    print('\n')
 
-# error rate information
-errorRateInformation=[]
-
-# device number information
-deviceNumInformation=[]
-with open("input.txt") as file_object:
-    for val in file_object.read().split():
-        deviceNumInformation.append(int(val))
-
-for t in range(len(deviceNumInformation)):
-
-    print("Decision time %d"%t,file=f)
-    timeInformation.append(t)
-
-    # Read allDeviceNum from input.txt
-    allDeviceNum=deviceNumInformation[t]
-    if allDeviceNum==0:
-        errorRateInformation.append(0)
-        continue
-
-    devices=DeviceManager(allDeviceNum)
-
-    # Prepare for the optimizer
-    devices.setDataSizeDistribution()
-    deviceNum=devices.setIsAliveDistribution()
-    isAvail=devices.getIsAlive()
-
+#---------------Convex optimize Process---------------#
+def convexOptimizer():
     # Initialize all the choices to the virtual edge
     choice=np.zeros([deviceNum,edgeNum])
     choice[:,edgeNum-1]=np.ones(deviceNum)
@@ -164,27 +183,113 @@ for t in range(len(deviceNumInformation)):
     print(optimizeResult.fun,file=f)
     errorRateInformation.append(optimizeResult.fun)
 
-    # call rounding function
-    choice=rounding(choice)
+    # call rounding function and get final decisions
+    choice=roundingForConvex(choice)
+    getFinalDecision(choice)
 
-    # Final Decision, need to merge choice from optimizer
-    # and unavailable devices which choices are always the virtual edge
-    finalDecision=np.zeros((allDeviceNum,edgeNum))
-    index=0
-    for j in range(allDeviceNum):
-        if isAvail[j]==True:
-            finalDecision[j]=choice[index]
-            index+=1
+#----------------Get all error rate-----------------#
+
+def getAllErrorRate(n):
+    errorRate=devices.getErrorRate()
+    errorRate=errorRate+(1-errorRate)*transmitErrorRate(n)
+    return errorRate
+
+#----------------Linear Programming Optimize Function------------------#
+
+def linearOptimizer():
+    # the coefficients vector in the objective function
+    # Note that we use the last item to denote our final objection
+    c=np.zeros(deviceNum+1)
+    c[deviceNum]=1
+    # result used for pruning
+    lastResult=None
+    finalResult=None
+    # enumerate the number of selected devices
+    # ask the number of selected devices to be i
+    # Note that it should not include the last item,
+    # which is our final objection
+    A_eq=np.ones((1,deviceNum+1))
+    A_eq[0][deviceNum]=0
+    dataSize=-devices.getDataSize()
+    dataSize=np.insert(dataSize,deviceNum,values=0,axis=0)
+    # set the coefficient matrix, which has deviceNum+1 constrains
+    # including deviceNum minimax constrains and 1 data ratio constrains
+    A_ub=np.zeros((deviceNum+1,deviceNum+1))
+    A_ub[deviceNum]=dataSize
+    B_ub=np.zeros(deviceNum+1)
+    B_ub[deviceNum]=-devices.getTotalDataSize()*ratio
+    # decision bounds
+    bound=[]
+    for i in range(deviceNum+1):
+        bound.append((0,1))
+    for i in range(1,deviceNum+1):
+        B_eq=np.array([i])
+        # errorRate includes device error and transmit error
+        errorRate=getAllErrorRate(i)
+        for j in range(deviceNum):
+            A_ub[j][j]=errorRate[j]
+            A_ub[j][deviceNum]=-1
+        res=linprog(c=c,A_ub=A_ub,b_ub=B_ub,A_eq=A_eq,b_eq=B_eq,bounds=bound)
+        if res.success==False:
+            continue
+        if lastResult!=None and res.fun>lastResult.fun:
+            print(lastResult)
+            finalResult=lastResult
+            break
+        lastResult=res
+    if finalResult==None:
+        print(lastResult)
+        finalResult=lastResult
+    # Rounding, do it twice
+    finalSolution=None
+    solution1=roundingForLinear(finalResult.x[0:deviceNum])
+    solution2=roundingForLinear(finalResult.x[0:deviceNum])
+    if np.sum(solution1)<np.sum(solution2):
+        finalSolution=solution1
+    elif np.sum(solution1)>np.sum(solution2):
+        finalSolution=solution2
+    else:
+        dataSize=devices.getDataSize()
+        if np.sum(dataSize[solution1.astype(bool)])>np.sum(dataSize[solution2.astype(bool)]):
+            finalSolution=solution1
         else:
-            finalDecision[j]=np.zeros(edgeNum)
-            finalDecision[j][edgeNum-1]=1
-    print('FINAL DECISION:',file=f)
-    print(finalDecision,file=f)
-    print('\n')
+            finalSolution=solution2
+    errorRate=getAllErrorRate(np.sum(finalSolution))
+    print("Final Solution:",end=' ')
+    print(finalSolution)
+    print("Error Rate:",end=' ')
+    print(np.max(errorRate[finalSolution.astype(bool)]))
 
-plt.scatter(timeInformation, deviceNumInformation)
-plt.show()
-plt.scatter(deviceNumInformation,errorRateInformation)
-plt.show()
-plt.plot(timeInformation,errorRateInformation)
-plt.show()
+#-----------------Main Process------------------#
+
+forDebug=True
+t=0
+
+for t in range(len(deviceNumInformation)):
+
+    print("Decision time %d"%t,file=f)
+    timeInformation.append(t)
+
+    # Read allDeviceNum from input.txt
+    allDeviceNum=deviceNumInformation[t]
+
+    if allDeviceNum==0:
+        errorRateInformation.append(0)
+        continue # For debug so delete it
+
+    devices=DeviceManager(allDeviceNum)
+
+    # Prepare for the optimizer
+    devices.setDataSizeDistribution()
+    deviceNum=int(devices.setIsAliveDistribution())
+    isAvail=devices.getIsAlive()
+
+    #convexOptimizer()
+    linearOptimizer()
+
+# plt.scatter(timeInformation, deviceNumInformation)
+# plt.show()
+# plt.scatter(deviceNumInformation,errorRateInformation)
+# plt.show()
+# plt.plot(timeInformation,errorRateInformation)
+# plt.show()

@@ -9,7 +9,7 @@ class DeviceManager:
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
         return np.random.rand(self.deviceNum)/10
-        #return np.array([1,1,1])
+        #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
         '''
@@ -26,7 +26,8 @@ class DeviceManager:
         Similar to the function above
         :return: A ndarray of {0,1}, with shape (self.deviceNum,)
         '''
-        res=np.random.randint(0,2,self.deviceNum)
+        #res=np.random.randint(0,2,self.deviceNum)
+        res=np.ones(self.deviceNum)
         return res
 
     def __init__(self,deviceNum):

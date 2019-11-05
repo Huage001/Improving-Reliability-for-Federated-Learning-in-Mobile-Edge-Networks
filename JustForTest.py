@@ -61,7 +61,12 @@ print(a)
 
 '''
 import matplotlib.pyplot as plt
-a=[1,3,5,7]
+a=np.array([1,3,5,7])
 b=[2,4,6,8]
-plt.scatter(a,b)
-plt.show()
+# plt.scatter(a,b)
+# plt.show()
+c=np.zeros((4,5))
+a=np.insert(a,4,values=9,axis=0)
+c[3]=a
+print(a[0:3])
+print(c)
