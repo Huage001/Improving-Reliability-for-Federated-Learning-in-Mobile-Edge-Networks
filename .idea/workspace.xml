@@ -4,9 +4,11 @@
     <list default="true" id="606a8d8e-3e6d-44a3-a90d-22c695ded174" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DeviceManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeviceManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EdgeManager.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/JustForTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/JustForTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Scheduler_cp.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/result.txt" beforeDir="false" afterPath="$PROJECT_DIR$/result.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -141,8 +143,8 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Scheduler.py</url>
-          <line>287</line>
-          <option name="timeStamp" value="5" />
+          <line>191</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

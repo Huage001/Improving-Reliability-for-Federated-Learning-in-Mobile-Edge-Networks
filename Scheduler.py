@@ -17,7 +17,7 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-ratio=0.5
+ratio=0.3
 
 #---------Other Variable---------#
 
@@ -37,7 +37,9 @@ f=open("result.txt", "w")
 timeInformation=[]
 
 # error rate information
-errorRateInformation=[]
+errorRateInformationLinear=[]
+errorRateInformationGreedy=[]
+errorRateInformationConvex=[]
 
 # device number information
 deviceNumInformation=[]
@@ -77,7 +79,7 @@ def transmitErrorRate(num):
     a=28.512476594629344
     b=33.1089283946605
     c=10.797872012316573
-    return a / (b + np.exp(c-num/1000))
+    return a / (b + np.exp(c-num))
 
 #---------------Convex Optimization Objective Function----------------#
 
@@ -114,7 +116,7 @@ def roundingForConvex(x):
     res=np.zeros(x.shape)
     for j in range(x.shape[0]):
         cur=0
-        probability=np.random.uniform(0,1,1)
+        probability=np.random.random()
         for i in range(x.shape[1]):
             cur+=x[j][i]
             if cur>=probability:
@@ -125,7 +127,7 @@ def roundingForConvex(x):
 def roundingForLinear(x):
     '''
     :param x: a vector with deviceNum mansions with value from [0,1]
-    :return:
+    :return: a vector of rouding result with the same shape as x
     '''
     res=np.zeros(x.shape)
     for i in range(x.shape[0]):
@@ -142,20 +144,23 @@ def getFinalDecision(choice):
     '''
     Final Decision, need to merge choice from optimizer
     and unavailable devices which choices are always the virtual edge
-    :return: None, just output results to a file
+    :return: Final error rate, that is, the max error rate of all devices
     '''
-    finalDecision=np.zeros((allDeviceNum,edgeNum))
+    finalDecision=np.zeros((allDeviceNum,edgeNum-1))
     index=0
     for j in range(allDeviceNum):
         if isAvail[j]==True:
             finalDecision[j]=choice[index]
             index+=1
         else:
-            finalDecision[j]=np.zeros(edgeNum)
-            finalDecision[j][edgeNum-1]=1
+            finalDecision[j]=np.zeros(np.shape(finalDecision[0]))
     print('FINAL DECISION:',file=f)
     print(finalDecision,file=f)
+    print("ERROR RATE:",end=' ',file=f)
+    errorRate=getAllErrorRate(np.sum(choice))
+    print(np.max(errorRate[choice.astype(bool)]),file=f)
     print('\n')
+    return np.max(errorRate[choice.astype(bool)])
 
 #---------------Convex optimize Process---------------#
 def convexOptimizer():
@@ -173,19 +178,21 @@ def convexOptimizer():
     choice=optimizeResult.x.reshape((deviceNum,edgeNum))
 
     # Information below is for debug
-    print('isAvail',end=' ',file=f)
-    print(isAvail,file=f)
+    # print('isAvail',end=' ',file=f)
+    # print(isAvail,file=f)
 
     # print(choice)
     # print(optimizeResult.message)
-    print('Success:',end=' ',file=f)
-    print(optimizeResult.success,file=f)
-    print(optimizeResult.fun,file=f)
-    errorRateInformation.append(optimizeResult.fun)
+    # print('Success:',end=' ',file=f)
+    # print(optimizeResult.success,file=f)
+    # print(optimizeResult.fun,file=f)
 
     # call rounding function and get final decisions
-    choice=roundingForConvex(choice)
-    getFinalDecision(choice)
+    while True:
+        solution=roundingForConvex(choice)
+        if np.sum(solution[:,0])!=0:
+            break
+    return getFinalDecision(solution[:,0])
 
 #----------------Get all error rate-----------------#
 
@@ -226,10 +233,13 @@ def linearOptimizer():
         B_eq=np.array([i])
         # errorRate includes device error and transmit error
         errorRate=getAllErrorRate(i)
+        # set each row of A_ub, note that the last number of each row is our objection, but now we view it as a decision variable
         for j in range(deviceNum):
             A_ub[j][j]=errorRate[j]
             A_ub[j][deviceNum]=-1
+        # call linprog
         res=linprog(c=c,A_ub=A_ub,b_ub=B_ub,A_eq=A_eq,b_eq=B_eq,bounds=bound)
+        # prone
         if res.success==False:
             continue
         if lastResult!=None and res.fun>lastResult.fun:
@@ -241,9 +251,14 @@ def linearOptimizer():
         print(lastResult)
         finalResult=lastResult
     # Rounding, do it twice
-    finalSolution=None
-    solution1=roundingForLinear(finalResult.x[0:deviceNum])
-    solution2=roundingForLinear(finalResult.x[0:deviceNum])
+    while True:
+        solution1=roundingForLinear(finalResult.x[0:deviceNum])
+        if np.sum(solution1)!=0:
+            break
+    while True:
+        solution2=roundingForLinear(finalResult.x[0:deviceNum])
+        if np.sum(solution2)!=0:
+            break
     if np.sum(solution1)<np.sum(solution2):
         finalSolution=solution1
     elif np.sum(solution1)>np.sum(solution2):
@@ -254,42 +269,85 @@ def linearOptimizer():
             finalSolution=solution1
         else:
             finalSolution=solution2
-    errorRate=getAllErrorRate(np.sum(finalSolution))
-    print("Final Solution:",end=' ')
-    print(finalSolution)
-    print("Error Rate:",end=' ')
-    print(np.max(errorRate[finalSolution.astype(bool)]))
+
+    return getFinalDecision(finalSolution)
+
+#-----------------Greedy Process----------------#
+
+def greedy():
+    dataSize=devices.getDataSize()
+    objectiveDataSize=ratio*devices.getTotalDataSize()
+    currentDataSize=0
+    ans=0
+    dataSizeSort=dataSize.argsort()
+    finalSolution=np.zeros(deviceNum)
+    for i in range(deviceNum-1,-1,-1):
+        ans+=1
+        finalSolution[dataSizeSort[i]]=1
+        currentDataSize+=dataSize[dataSizeSort[i]]
+        if currentDataSize>objectiveDataSize:
+            break
+    return getFinalDecision(finalSolution)
 
 #-----------------Main Process------------------#
 
-forDebug=True
-t=0
+# do numbers of times linear programming to evaluate the average performance
+times=10
 
 for t in range(len(deviceNumInformation)):
+    convexAve=[]
+    linearAve=[]
+    greedyAve=[]
+    for k in range(times):
 
-    print("Decision time %d"%t,file=f)
-    timeInformation.append(t)
+        print("Decision time %d"%t,file=f)
+        timeInformation.append(t)
 
-    # Read allDeviceNum from input.txt
-    allDeviceNum=deviceNumInformation[t]
+        # Read allDeviceNum from input.txt
+        allDeviceNum=deviceNumInformation[t]
 
-    if allDeviceNum==0:
-        errorRateInformation.append(0)
-        continue # For debug so delete it
+        if allDeviceNum==0:
+            errorRateInformationLinear.append(0)
+            errorRateInformationGreedy.append(0)
+            continue # For debug so delete it
 
-    devices=DeviceManager(allDeviceNum)
+        devices=DeviceManager(allDeviceNum)
 
-    # Prepare for the optimizer
-    devices.setDataSizeDistribution()
-    deviceNum=int(devices.setIsAliveDistribution())
-    isAvail=devices.getIsAlive()
+        # Prepare for the optimizer
+        devices.setDataSizeDistribution()
+        deviceNum=int(devices.setIsAliveDistribution())
+        isAvail=devices.getIsAlive()
+        print('Number of all devices',end=' ',file=f)
+        print(allDeviceNum,file=f)
+        print('Number of available devices',end=' ',file=f)
+        print(deviceNum,file=f)
+        print('Available devices:',file=f)
+        print(isAvail,file=f)
+        print('Error rates of available devices',file=f)
+        print(devices.getErrorRate(),file=f)
+        print('Data size of available devices',file=f)
+        print(devices.getDataSize(),file=f)
 
-    #convexOptimizer()
-    linearOptimizer()
+
+        print('Convex Optimizer:',file=f)
+        convexAve.append(convexOptimizer())
+        print('Linear Optimizer:',file=f)
+        linearAve.append(linearOptimizer())
+        print('Greedy',file=f)
+        greedyAve.append(greedy())
+    errorRateInformationLinear.append(np.mean(linearAve))
+    errorRateInformationGreedy.append(np.mean(greedyAve))
+    errorRateInformationConvex.append(np.mean(convexAve))
+
 
 # plt.scatter(timeInformation, deviceNumInformation)
 # plt.show()
-# plt.scatter(deviceNumInformation,errorRateInformation)
-# plt.show()
+plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Linear Function',marker='o')
+plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy Function',marker='x')
+plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='Convex Function',marker='*')
+# plt.plot(deviceNumInformation,errorRateInformationLinear,c='#00CED1',label='Linear Function')
+# plt.plot(deviceNumInformation,errorRateInformationGreedy,c='#DC143C',label='Greedy Function')
+plt.legend()
+plt.show()
 # plt.plot(timeInformation,errorRateInformation)
 # plt.show()

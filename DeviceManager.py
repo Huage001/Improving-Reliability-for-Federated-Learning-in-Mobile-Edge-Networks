@@ -8,7 +8,7 @@ class DeviceManager:
         But now, we only use Gaussian distribution
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
-        return np.random.rand(self.deviceNum)/10
+        return np.random.rand(self.deviceNum)/5
         #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
