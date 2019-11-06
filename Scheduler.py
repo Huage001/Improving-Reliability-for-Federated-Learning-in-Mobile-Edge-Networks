@@ -1,9 +1,89 @@
-from DeviceManager import DeviceManager
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
 from scipy.optimize import linprog
 import copy
+
+class DeviceManager:
+
+    def getErrorRateDistribution(self):
+        '''
+        TODO: Read the error rates of all devices from input file
+        But now, we only use Gaussian distribution
+        :return: A ndarray of float numbers, with shape (self.deviceNum,)
+        '''
+        return np.random.rand(self.deviceNum)/5
+        #return np.array([0.1,0.1,0.1])
+
+    def getDataSizeDistribution(self):
+        '''
+        TODO: Read the data size distribution from input file. But it seems that we do not have this column in the input file
+        Therefore, we just use Gaussian distribution
+        Similar to the function above
+        :return: A ndarray of float numbers, with shape (self.deviceNum,)
+        '''
+        return np.random.rand(self.deviceNum)
+        #return np.array([1,1,1])
+
+    def getIsAliveDistribution(self):
+        '''
+        Similar to the function above
+        :return: A ndarray of {0,1}, with shape (self.deviceNum,)
+        '''
+        #res=np.random.randint(0,2,self.deviceNum)
+        res=np.ones(self.deviceNum)
+        return res
+
+    def __init__(self,deviceNum):
+        self.deviceNum=deviceNum
+        self.allErrorRate=self.getErrorRateDistribution()
+        self.isAlive=None
+        self.dataSize=None
+        self.allDataSize=None
+        self.errorRate=None
+        self.totalDataSize=0
+
+    def setDataSizeDistribution(self):
+        '''
+        call getDataSizeDistribution and assign returned value to all devices
+        :return: None
+        '''
+        self.allDataSize=self.getDataSizeDistribution()
+
+    def setIsAliveDistribution(self):
+        '''
+        call getIsAliveDistribution and assign returned value to all devices
+        :return: None
+        '''
+        self.isAlive=self.getIsAliveDistribution()
+        self.dataSize=self.allDataSize[self.isAlive.astype(bool)]
+        self.totalDataSize=np.sum(self.dataSize)
+        self.errorRate=self.allErrorRate[self.isAlive.astype(bool)]
+        return np.sum(self.isAlive)
+
+    def getTotalDataSize(self):
+        '''
+        :return: a real number
+        '''
+        return self.totalDataSize
+
+    def getDataSize(self):
+        '''
+        :return: a list of the dataSize of each device
+        '''
+        return self.dataSize
+
+    def getIsAlive(self):
+        '''
+        :return: a list of bool variables indicating whether each device is alive
+        '''
+        return self.isAlive
+
+    def getErrorRate(self):
+        '''
+        :return: a list of the ComputeDelay of each device
+        '''
+        return self.errorRate
 
 #----------Constant----------#
 
@@ -17,7 +97,8 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-ratio=0.3
+#ratio=0.7
+ratios=np.linspace(0.1,0.9,20)
 
 #---------Other Variable---------#
 
@@ -36,10 +117,15 @@ f=open("result.txt", "w")
 # time information
 timeInformation=[]
 
-# error rate information
+# error rate information, used by scatter plots
 errorRateInformationLinear=[]
 errorRateInformationGreedy=[]
 errorRateInformationConvex=[]
+
+# data distribution information, used by box plots
+dataInformationLinear=[]
+dataInformationGreedy=[]
+dataInformationConvex=[]
 
 # device number information
 deviceNumInformation=[]
@@ -192,6 +278,16 @@ def convexOptimizer():
         solution=roundingForConvex(choice)
         if np.sum(solution[:,0])!=0:
             break
+    dataSize=devices.getDataSize()
+
+    # For box plot
+    # dataInformationConvex.append(dataSize[solution[:,0].astype(bool)])
+
+    # For CDF plot
+    global dataInformationConvex
+    dataInformationConvex=dataSize[solution[:,0].astype(bool)]
+    dataInformationConvex.sort()
+
     return getFinalDecision(solution[:,0])
 
 #----------------Get all error rate-----------------#
@@ -270,6 +366,16 @@ def linearOptimizer():
         else:
             finalSolution=solution2
 
+    # For box plot
+    # dataSize=devices.getDataSize()
+    # dataInformationLinear.append(dataSize[finalSolution.astype(bool)])
+
+    # For CDF plot
+    global dataInformationLinear
+    dataSize=devices.getDataSize()
+    dataInformationLinear=dataSize[finalSolution.astype(bool)]
+    dataInformationLinear.sort()
+
     return getFinalDecision(finalSolution)
 
 #-----------------Greedy Process----------------#
@@ -287,6 +393,15 @@ def greedy():
         currentDataSize+=dataSize[dataSizeSort[i]]
         if currentDataSize>objectiveDataSize:
             break
+
+    # For box plot
+    # dataInformationGreedy.append(dataSize[finalSolution.astype(bool)])
+
+    # For CDF plot
+    global dataInformationGreedy
+    dataInformationGreedy=dataSize[finalSolution.astype(bool)]
+    dataInformationGreedy.sort()
+
     return getFinalDecision(finalSolution)
 
 #-----------------Main Process------------------#
@@ -294,7 +409,11 @@ def greedy():
 # do numbers of times linear programming to evaluate the average performance
 times=10
 
-for t in range(len(deviceNumInformation)):
+#for t in range(len(deviceNumInformation)):
+#for t in range(0,1,1):
+for r in range(len(ratios)):
+    t=0
+    ratio=ratios[r]
     convexAve=[]
     linearAve=[]
     greedyAve=[]
@@ -328,26 +447,79 @@ for t in range(len(deviceNumInformation)):
         print('Data size of available devices',file=f)
         print(devices.getDataSize(),file=f)
 
-
         print('Convex Optimizer:',file=f)
         convexAve.append(convexOptimizer())
         print('Linear Optimizer:',file=f)
         linearAve.append(linearOptimizer())
         print('Greedy',file=f)
         greedyAve.append(greedy())
+
     errorRateInformationLinear.append(np.mean(linearAve))
     errorRateInformationGreedy.append(np.mean(greedyAve))
     errorRateInformationConvex.append(np.mean(convexAve))
 
+# Computing the improvement
+totalErrorRateLinear=np.mean(errorRateInformationLinear)
+totalErrorRateGreedy=np.mean(errorRateInformationGreedy)
+totalErrorRateConvex=np.mean(errorRateInformationConvex)
+improveGreedy=(totalErrorRateGreedy-totalErrorRateLinear)*100/totalErrorRateLinear
+improveConvex=(totalErrorRateConvex-totalErrorRateLinear)*100/totalErrorRateLinear
 
-# plt.scatter(timeInformation, deviceNumInformation)
-# plt.show()
-plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Linear Function',marker='o')
-plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy Function',marker='x')
-plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='Convex Function',marker='*')
-# plt.plot(deviceNumInformation,errorRateInformationLinear,c='#00CED1',label='Linear Function')
-# plt.plot(deviceNumInformation,errorRateInformationGreedy,c='#DC143C',label='Greedy Function')
+# Scatter plot
+# plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Ours',marker='o')
+# plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+# plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+# plt.legend()
+
+plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
+plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
 plt.legend()
-plt.show()
-# plt.plot(timeInformation,errorRateInformation)
+
+# Box plot
+# boxes=[]
+# boxes.append(plt.boxplot(dataInformationConvex,patch_artist=True))
+# boxes.append(plt.boxplot(dataInformationGreedy,patch_artist=True))
+# boxes.append(plt.boxplot(dataInformationLinear,patch_artist=True))
+# color=['r','g','b']
+# for i in range(3):
+#     for j in range(times):
+#         boxes[i]['boxes'][j].set_facecolor(color[i])
+
+# CDF plot
+def getY(x):
+    y=[]
+    cur=0
+    xvals=[]
+    yvals=[]
+    for i in range(len(x)):
+        if i>0:
+            if i%2==1:
+                b=2
+            else:
+                b=0.5
+            a=x[i]/((x[i]-x[i-1])**b)
+            xval=np.linspace(x[i-1],x[i],20)
+            yval=a*((xval-x[i-1])**b)+cur
+            xvals+=xval.tolist()
+            yvals+=yval.tolist()
+        cur+=x[i]
+        y.append(cur)
+    return xvals,yvals
+
+# plt.hist((dataInformationConvex),cumulative=True,color='b',label='SLSQP Algorithm',histtype='step',bins=1000)
+# plt.hist((dataInformationGreedy),cumulative=True,color='g',label='Greedy',histtype='step',bins=1000)
+# plt.hist((dataInformationLinear),cumulative=True,color='r',label='Ours',histtype='step',bins=1000)
+# plt.legend()
+#
 # plt.show()
+#
+# data=getY(dataInformationConvex)
+# plt.plot(data[0],data[1],color='b',label='SLSQP Algorithm')
+# data=getY(dataInformationGreedy)
+# plt.plot(data[0],data[1],color='g',label='Greey')
+# data=getY(dataInformationLinear)
+# plt.plot(data[0],data[1],color='r',label='Ours')
+# plt.legend()
+
+plt.show()
