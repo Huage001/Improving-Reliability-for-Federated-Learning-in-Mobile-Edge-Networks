@@ -2,9 +2,10 @@ from scipy.optimize import minimize
 from scipy.optimize import fsolve
 import numpy as np
 import matplotlib.pyplot as plt
+from DeviceManager import DeviceManager
+from scipy.stats import f
 
-def func(x):
-    return x*(3**x)-64
-r=fsolve(func,6)
-print(r)
-print(3%2)
+a=np.random.uniform(0,4,10)
+b=f.pdf(np.random.uniform(0,4,20), 1, 1)
+print(b)
+

@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import minimize
 from scipy.optimize import linprog
+from scipy.stats import f
 import copy
+import time
 
 class DeviceManager:
 
@@ -12,7 +14,21 @@ class DeviceManager:
         But now, we only use Gaussian distribution
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
-        return np.random.rand(self.deviceNum)/5
+        # if self.distribution=='normal':
+        #     return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])/5
+        # elif self.distribution=='f':
+        #     return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])/5
+        # elif self.distribution=='zipf':
+        #     res=np.random.zipf(self.parameter,self.deviceNum)/100
+        #     for i in range(res.shape[0]):
+        #         if res[i]>1:
+        #             res[i]=0.9
+        #     return res
+        res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
+        for i in range(res.shape[0]):
+            if res[i]>1:
+                res[i]=0.9
+        return res
         #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
@@ -22,7 +38,14 @@ class DeviceManager:
         Similar to the function above
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
-        return np.random.rand(self.deviceNum)
+        #return np.random.rand(self.deviceNum)
+        #return f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)
+        if self.distribution=='normal':
+            return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])
+        elif self.distribution=='f':
+            return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])
+        elif self.distribution=='zipf':
+            return np.random.zipf(self.parameter,self.deviceNum)
         #return np.array([1,1,1])
 
     def getIsAliveDistribution(self):
@@ -34,8 +57,10 @@ class DeviceManager:
         res=np.ones(self.deviceNum)
         return res
 
-    def __init__(self,deviceNum):
+    def __init__(self,deviceNum,parameter,distribution):
         self.deviceNum=deviceNum
+        self.parameter=parameter
+        self.distribution=distribution
         self.allErrorRate=self.getErrorRateDistribution()
         self.isAlive=None
         self.dataSize=None
@@ -97,8 +122,8 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-#ratio=0.7
-ratios=np.linspace(0.1,0.9,20)
+ratio=0.5
+#ratios=np.linspace(0.1,0.7,20)
 
 #---------Other Variable---------#
 
@@ -112,7 +137,7 @@ edgeNum=edgeNum+1
 selectDeviceNum=0
 
 # Output file
-f=open("result.txt", "w")
+fi=open("result.txt", "w")
 
 # time information
 timeInformation=[]
@@ -122,10 +147,13 @@ errorRateInformationLinear=[]
 errorRateInformationGreedy=[]
 errorRateInformationConvex=[]
 
-# data distribution information, used by box plots
-dataInformationLinear=[]
-dataInformationGreedy=[]
-dataInformationConvex=[]
+# device error distribution information, used by box plots
+# deviceErrorInformationLinear=[]
+# deviceErrorInformationGreedy=[]
+# deviceErrorInformationConvex=[]
+deviceErrorLinear=[]
+deviceErrorGreedy=[]
+deviceErrorConvex=[]
 
 # device number information
 deviceNumInformation=[]
@@ -240,11 +268,11 @@ def getFinalDecision(choice):
             index+=1
         else:
             finalDecision[j]=np.zeros(np.shape(finalDecision[0]))
-    print('FINAL DECISION:',file=f)
-    print(finalDecision,file=f)
-    print("ERROR RATE:",end=' ',file=f)
+    print('FINAL DECISION:',file=fi)
+    print(finalDecision,file=fi)
+    print("ERROR RATE:",end=' ',file=fi)
     errorRate=getAllErrorRate(np.sum(choice))
-    print(np.max(errorRate[choice.astype(bool)]),file=f)
+    print(np.max(errorRate[choice.astype(bool)]),file=fi)
     print('\n')
     return np.max(errorRate[choice.astype(bool)])
 
@@ -264,14 +292,14 @@ def convexOptimizer():
     choice=optimizeResult.x.reshape((deviceNum,edgeNum))
 
     # Information below is for debug
-    # print('isAvail',end=' ',file=f)
-    # print(isAvail,file=f)
+    # print('isAvail',end=' ',file=fi)
+    # print(isAvail,file=fi)
 
     # print(choice)
     # print(optimizeResult.message)
-    # print('Success:',end=' ',file=f)
-    # print(optimizeResult.success,file=f)
-    # print(optimizeResult.fun,file=f)
+    # print('Success:',end=' ',file=fi)
+    # print(optimizeResult.success,file=fi)
+    # print(optimizeResult.fun,file=fi)
 
     # call rounding function and get final decisions
     while True:
@@ -281,7 +309,10 @@ def convexOptimizer():
     dataSize=devices.getDataSize()
 
     # For box plot
+    # dataSize=devices.getDataSize()
     # dataInformationConvex.append(dataSize[solution[:,0].astype(bool)])
+    errorRate=devices.getErrorRate()
+    deviceErrorInformationConvex.append(errorRate[solution[:,0].astype(bool)])
 
     # For CDF plot
     global dataInformationConvex
@@ -369,6 +400,8 @@ def linearOptimizer():
     # For box plot
     # dataSize=devices.getDataSize()
     # dataInformationLinear.append(dataSize[finalSolution.astype(bool)])
+    errorRate=devices.getErrorRate()
+    deviceErrorInformationLinear.append(errorRate[finalSolution.astype(bool)])
 
     # For CDF plot
     global dataInformationLinear
@@ -396,6 +429,8 @@ def greedy():
 
     # For box plot
     # dataInformationGreedy.append(dataSize[finalSolution.astype(bool)])
+    errorRate=devices.getErrorRate()
+    deviceErrorInformationGreedy.append(errorRate[finalSolution.astype(bool)])
 
     # For CDF plot
     global dataInformationGreedy
@@ -408,18 +443,39 @@ def greedy():
 
 # do numbers of times linear programming to evaluate the average performance
 times=10
-
-#for t in range(len(deviceNumInformation)):
+parameter=[[0,1],[1,2],[2,3],[1,1],[8,3],[20,20],1.5,2,3]
+#trace=open("trace_best.txt","w")
+timeConvex=[]
+timeGreedy=[]
+timeLinear=[]
+for t in range(len(deviceNumInformation)):
 #for t in range(0,1,1):
-for r in range(len(ratios)):
-    t=0
-    ratio=ratios[r]
+#for r in range(len(ratios)):
+#for r in range(len(parameter)):
+    # t=0
+    # if r<3:
+    #     distribution='normal'
+    #     ratio=0.3
+    # elif r<6:
+    #     distribution='f'
+    #     ratio=0.6
+    # else:
+    #     distribution='zipf'
+    #     ratio=0.5
+    #ratio=ratios[r]
     convexAve=[]
     linearAve=[]
     greedyAve=[]
+    timeConvexAve=[]
+    timeGreedyAve=[]
+    timeLinearAve=[]
+    deviceErrorInformationLinear=[]
+    deviceErrorInformationConvex=[]
+    deviceErrorInformationGreedy=[]
+    #allDevices=[]
     for k in range(times):
 
-        print("Decision time %d"%t,file=f)
+        print("Decision time %d"%t,file=fi)
         timeInformation.append(t)
 
         # Read allDeviceNum from input.txt
@@ -430,33 +486,61 @@ for r in range(len(ratios)):
             errorRateInformationGreedy.append(0)
             continue # For debug so delete it
 
-        devices=DeviceManager(allDeviceNum)
+        #devices=DeviceManager(allDeviceNum,parameter[r],distribution)
+        devices=DeviceManager(allDeviceNum,[1,1],'f')
+        #allDevices.append(devices)
 
         # Prepare for the optimizer
         devices.setDataSizeDistribution()
         deviceNum=int(devices.setIsAliveDistribution())
         isAvail=devices.getIsAlive()
-        print('Number of all devices',end=' ',file=f)
-        print(allDeviceNum,file=f)
-        print('Number of available devices',end=' ',file=f)
-        print(deviceNum,file=f)
-        print('Available devices:',file=f)
-        print(isAvail,file=f)
-        print('Error rates of available devices',file=f)
-        print(devices.getErrorRate(),file=f)
-        print('Data size of available devices',file=f)
-        print(devices.getDataSize(),file=f)
+        print('Number of all devices',end=' ',file=fi)
+        print(allDeviceNum,file=fi)
+        print('Number of available devices',end=' ',file=fi)
+        print(deviceNum,file=fi)
+        print('Available devices:',file=fi)
+        print(isAvail,file=fi)
+        print('Error rates of available devices',file=fi)
+        print(devices.getErrorRate(),file=fi)
+        print('Data size of available devices',file=fi)
+        print(devices.getDataSize(),file=fi)
 
-        print('Convex Optimizer:',file=f)
-        convexAve.append(convexOptimizer())
-        print('Linear Optimizer:',file=f)
-        linearAve.append(linearOptimizer())
-        print('Greedy',file=f)
-        greedyAve.append(greedy())
+        print('Convex Optimizer:',file=fi)
+        timeStartConvex=time.time()
+        convexValue=convexOptimizer()
+        timeEndConvex=time.time()
+        timeConvexAve.append(timeEndConvex-timeStartConvex)
+        convexAve.append(convexValue)
+        print('Linear Optimizer:',file=fi)
+        timeStartLinear=time.time()
+        linearValue=linearOptimizer()
+        timeEndLinear=time.time()
+        timeLinearAve.append(timeEndLinear-timeStartLinear)
+        linearAve.append(linearValue)
+        print('Greedy',file=fi)
+        timeStartGreedy=time.time()
+        greedyValue=greedy()
+        timeEndGreedy=time.time()
+        timeGreedyAve.append(timeEndGreedy-timeStartGreedy)
+        greedyAve.append(greedyValue)
+
+    # best=np.argmax(-np.array(linearAve)+(np.array(greedyAve)+np.array(convexAve))/2)
+    # errorRateInformationLinear.append(linearAve[best])
+    # errorRateInformationGreedy.append(greedyAve[best])
+    # errorRateInformationConvex.append(convexAve[best])
+    # deviceErrorLinear.append(deviceErrorInformationLinear[best])
+    # deviceErrorGreedy.append(deviceErrorInformationGreedy[best])
+    # deviceErrorConvex.append(deviceErrorInformationConvex[best])
+
+    # print(allDevices[best].getErrorRate(),file=trace)
+    # print(allDevices[best].getDataSize(),file=trace)
 
     errorRateInformationLinear.append(np.mean(linearAve))
     errorRateInformationGreedy.append(np.mean(greedyAve))
     errorRateInformationConvex.append(np.mean(convexAve))
+    timeGreedy.append(np.mean(timeGreedyAve))
+    timeConvex.append(np.mean(timeConvexAve))
+    timeLinear.append(np.mean(timeLinearAve))
 
 # Computing the improvement
 totalErrorRateLinear=np.mean(errorRateInformationLinear)
@@ -466,24 +550,55 @@ improveGreedy=(totalErrorRateGreedy-totalErrorRateLinear)*100/totalErrorRateLine
 improveConvex=(totalErrorRateConvex-totalErrorRateLinear)*100/totalErrorRateLinear
 
 # Scatter plot
-# plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Ours',marker='o')
-# plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
-# plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
-# plt.legend()
-
-plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
-plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
-plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Ours',marker='o')
+plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
 plt.legend()
+plt.show()
+
+# plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
+# plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+# plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+# plt.legend()
+# plt.show()
+
+plotData=open("plotData_main.txt", "w")
+print(errorRateInformationLinear,file=plotData)
+print(errorRateInformationGreedy,file=plotData)
+print(errorRateInformationConvex,file=plotData)
+
+# Time plot
+timeData=open("timeused.txt","w")
+print(timeLinear,file=timeData)
+print(timeGreedy,file=timeData)
+print(timeConvex,file=timeData)
+plt.plot(deviceNumInformation,timeLinear,color='r',label='Ours')
+plt.plot(deviceNumInformation,timeGreedy,color='g',label='Greedy')
+plt.plot(deviceNumInformation,timeConvex,color='b',label='SLSQP Algorithm')
+plt.legend()
+plt.show()
+
+# Bar plot
+#xtext=['normal distribution with high variance','normal distribution with middle variance','normal distribution with low variance',
+#       'F distribution with high bias','F distribution with middle bias','F distribution with low bias']
+# xtext=['Normal-1','Normal-2','Normal-3','F-1','F-2','F-3','zipf-1','zipf-2','zipf-3']
+# xposition=np.arange(len(parameter))
+# bar_width=0.25
+# plt.bar(x=xposition, height=errorRateInformationConvex, label='SLSQP Algorithm', color='b',align='center',width=bar_width)
+# plt.bar(x=xposition+bar_width, height=errorRateInformationGreedy, label='Greedy', color='g',align='center',width=bar_width)
+# plt.bar(x=xposition+2*bar_width, height=errorRateInformationLinear, label='Ours', color='r',align='center',width=bar_width)
+# plt.xticks(xposition+bar_width,xtext,rotation=45)
+# plt.legend()
+#plt.show()
 
 # Box plot
 # boxes=[]
-# boxes.append(plt.boxplot(dataInformationConvex,patch_artist=True))
-# boxes.append(plt.boxplot(dataInformationGreedy,patch_artist=True))
-# boxes.append(plt.boxplot(dataInformationLinear,patch_artist=True))
-# color=['r','g','b']
+# boxes.append(plt.boxplot(deviceErrorConvex,patch_artist=True))
+# boxes.append(plt.boxplot(deviceErrorGreedy,patch_artist=True))
+# boxes.append(plt.boxplot(deviceErrorLinear,patch_artist=True))
+# color=['b','g','r']
 # for i in range(3):
-#     for j in range(times):
+#     for j in range(len(parameter)):
 #         boxes[i]['boxes'][j].set_facecolor(color[i])
 
 # CDF plot
