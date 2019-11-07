@@ -24,11 +24,12 @@ class DeviceManager:
         #         if res[i]>1:
         #             res[i]=0.9
         #     return res
-        res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
-        for i in range(res.shape[0]):
-            if res[i]>1:
-                res[i]=0.9
-        return res
+        # res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
+        # for i in range(res.shape[0]):
+        #     if res[i]>1:
+        #         res[i]=0.9
+        # return res
+        return np.random.rand(self.deviceNum)/5
         #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
@@ -122,7 +123,7 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-ratio=0.5
+ratio=0.4
 #ratios=np.linspace(0.1,0.7,20)
 
 #---------Other Variable---------#
@@ -487,7 +488,7 @@ for t in range(len(deviceNumInformation)):
             continue # For debug so delete it
 
         #devices=DeviceManager(allDeviceNum,parameter[r],distribution)
-        devices=DeviceManager(allDeviceNum,[1,1],'f')
+        devices=DeviceManager(allDeviceNum,[0,1],'normal')
         #allDevices.append(devices)
 
         # Prepare for the optimizer
@@ -562,13 +563,13 @@ plt.show()
 # plt.legend()
 # plt.show()
 
-plotData=open("plotData_main.txt", "w")
+plotData=open("plotData_main_normal2.txt", "w")
 print(errorRateInformationLinear,file=plotData)
 print(errorRateInformationGreedy,file=plotData)
 print(errorRateInformationConvex,file=plotData)
 
 # Time plot
-timeData=open("timeused.txt","w")
+timeData=open("timeused1.txt","w")
 print(timeLinear,file=timeData)
 print(timeGreedy,file=timeData)
 print(timeConvex,file=timeData)
@@ -636,5 +637,4 @@ def getY(x):
 # data=getY(dataInformationLinear)
 # plt.plot(data[0],data[1],color='r',label='Ours')
 # plt.legend()
-
-plt.show()
+# plt.show()
