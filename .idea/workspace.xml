@@ -1,44 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="606a8d8e-3e6d-44a3-a90d-22c695ded174" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2016PassengerCount.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeviceManager.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JustForTest.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delicate picture/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/delicate picture/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delicate picture/figure3.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/delicate picture/figure3.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delicate picture/figure4.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/delicate picture/figure4.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/picture.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_ave.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_ave1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_ave2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_best.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_data_distribution_new.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_distribution.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_distribution_ave.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_distribution_new.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_distribution_new1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_error_distribution_new.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_f_ave.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_f_ave1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_f_best.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_lessdevices_f_best.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_lessdevices_normal_best.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_main.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_main_normal.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_main_normal1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotData_main_normal2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/restoreData.py" beforeDir="false" afterPath="$PROJECT_DIR$/restoreData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_file.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeused.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/timeused1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trace_best.txt" beforeDir="false" />
-    </list>
+    <list default="true" id="606a8d8e-3e6d-44a3-a90d-22c695ded174" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
