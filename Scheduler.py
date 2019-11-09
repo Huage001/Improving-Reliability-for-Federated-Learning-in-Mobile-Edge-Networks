@@ -14,22 +14,22 @@ class DeviceManager:
         But now, we only use Gaussian distribution
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
-        # if self.distribution=='normal':
-        #     return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])/5
-        # elif self.distribution=='f':
-        #     return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])/5
-        # elif self.distribution=='zipf':
-        #     res=np.random.zipf(self.parameter,self.deviceNum)/100
-        #     for i in range(res.shape[0]):
-        #         if res[i]>1:
-        #             res[i]=0.9
-        #     return res
+        if self.distribution=='normal':
+            return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])/5
+        elif self.distribution=='f':
+            return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])/5
+        elif self.distribution=='zipf':
+            res=np.random.zipf(self.parameter,self.deviceNum)/100
+            for i in range(res.shape[0]):
+                if res[i]>1:
+                    res[i]=0.9
+            return res
         # res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
         # for i in range(res.shape[0]):
         #     if res[i]>1:
         #         res[i]=0.9
         # return res
-        return np.random.rand(self.deviceNum)/5
+        # return np.random.rand(self.deviceNum)/5
         #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
@@ -123,8 +123,8 @@ allDeviceNum=0
 edgeNum=1
 
 # Ratio of Selected Data
-ratio=0.4
-#ratios=np.linspace(0.1,0.7,20)
+#ratio=0.5
+ratios=np.linspace(0.1,0.7,20)
 
 #---------Other Variable---------#
 
@@ -443,15 +443,15 @@ def greedy():
 #-----------------Main Process------------------#
 
 # do numbers of times linear programming to evaluate the average performance
-times=10
+times=25
 parameter=[[0,1],[1,2],[2,3],[1,1],[8,3],[20,20],1.5,2,3]
 #trace=open("trace_best.txt","w")
 timeConvex=[]
 timeGreedy=[]
 timeLinear=[]
-for t in range(len(deviceNumInformation)):
+#for t in range(len(deviceNumInformation)):
 #for t in range(0,1,1):
-#for r in range(len(ratios)):
+for r in range(len(ratios)):
 #for r in range(len(parameter)):
     # t=0
     # if r<3:
@@ -463,7 +463,7 @@ for t in range(len(deviceNumInformation)):
     # else:
     #     distribution='zipf'
     #     ratio=0.5
-    #ratio=ratios[r]
+    ratio=ratios[r]
     convexAve=[]
     linearAve=[]
     greedyAve=[]
@@ -476,11 +476,12 @@ for t in range(len(deviceNumInformation)):
     #allDevices=[]
     for k in range(times):
 
-        print("Decision time %d"%t,file=fi)
-        timeInformation.append(t)
+        # print("Decision time %d"%t,file=fi)
+        # timeInformation.append(t)
 
         # Read allDeviceNum from input.txt
-        allDeviceNum=deviceNumInformation[t]
+        #allDeviceNum=deviceNumInformation[t]
+        allDeviceNum=deviceNumInformation[0]
 
         if allDeviceNum==0:
             errorRateInformationLinear.append(0)
@@ -488,7 +489,7 @@ for t in range(len(deviceNumInformation)):
             continue # For debug so delete it
 
         #devices=DeviceManager(allDeviceNum,parameter[r],distribution)
-        devices=DeviceManager(allDeviceNum,[0,1],'normal')
+        devices=DeviceManager(allDeviceNum,2,'zipf')
         #allDevices.append(devices)
 
         # Prepare for the optimizer
@@ -551,33 +552,33 @@ improveGreedy=(totalErrorRateGreedy-totalErrorRateLinear)*100/totalErrorRateLine
 improveConvex=(totalErrorRateConvex-totalErrorRateLinear)*100/totalErrorRateLinear
 
 # Scatter plot
-plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Ours',marker='o')
-plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
-plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
-plt.legend()
-plt.show()
-
-# plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
-# plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
-# plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+# plt.scatter(deviceNumInformation,errorRateInformationLinear,color='r',label='Ours',marker='o')
+# plt.scatter(deviceNumInformation,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+# plt.scatter(deviceNumInformation,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
 # plt.legend()
 # plt.show()
 
-plotData=open("plotData_main_normal2.txt", "w")
+plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
+plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+plt.legend()
+plt.show()
+
+plotData=open("plotData_ratio_zipf2.txt", "w")
 print(errorRateInformationLinear,file=plotData)
 print(errorRateInformationGreedy,file=plotData)
 print(errorRateInformationConvex,file=plotData)
 
 # Time plot
-timeData=open("timeused1.txt","w")
-print(timeLinear,file=timeData)
-print(timeGreedy,file=timeData)
-print(timeConvex,file=timeData)
-plt.plot(deviceNumInformation,timeLinear,color='r',label='Ours')
-plt.plot(deviceNumInformation,timeGreedy,color='g',label='Greedy')
-plt.plot(deviceNumInformation,timeConvex,color='b',label='SLSQP Algorithm')
-plt.legend()
-plt.show()
+# timeData=open("timeused1.txt","w")
+# print(timeLinear,file=timeData)
+# print(timeGreedy,file=timeData)
+# print(timeConvex,file=timeData)
+# plt.plot(deviceNumInformation,timeLinear,color='r',label='Ours')
+# plt.plot(deviceNumInformation,timeGreedy,color='g',label='Greedy')
+# plt.plot(deviceNumInformation,timeConvex,color='b',label='SLSQP Algorithm')
+# plt.legend()
+# plt.show()
 
 # Bar plot
 #xtext=['normal distribution with high variance','normal distribution with middle variance','normal distribution with low variance',
