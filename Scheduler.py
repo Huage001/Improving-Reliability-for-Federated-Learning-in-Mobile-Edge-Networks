@@ -6,6 +6,10 @@ from scipy.stats import f
 import copy
 import time
 
+T=0
+P=[0.18,0.28,0.38]
+V=[0.25,0.25,0.25]
+
 class DeviceManager:
 
     def getErrorRateDistribution(self):
@@ -14,22 +18,32 @@ class DeviceManager:
         But now, we only use Gaussian distribution
         :return: A ndarray of float numbers, with shape (self.deviceNum,)
         '''
-        if self.distribution=='normal':
-            return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])/5
-        elif self.distribution=='f':
-            return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])/5
-        elif self.distribution=='zipf':
-            res=np.random.zipf(self.parameter,self.deviceNum)/100
-            for i in range(res.shape[0]):
-                if res[i]>1:
-                    res[i]=0.9
-            return res
-        # res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
+        # if self.distribution=='normal':
+        #     return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])/5
+        # elif self.distribution=='f':
+        #     return f.pdf(np.random.uniform(0,4,self.deviceNum), self.parameter[0], self.parameter[1])/5
+        # elif self.distribution=='zipf':
+        #     res=np.random.zipf(self.parameter,self.deviceNum)/100
+        #     for i in range(res.shape[0]):
+        #         if res[i]>1:
+        #             res[i]=0.9
+        #     return res
+        #res=f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)/2
+        # res=np.random.zipf(1.5,self.deviceNum)/20
         # for i in range(res.shape[0]):
         #     if res[i]>1:
         #         res[i]=0.9
         # return res
         # return np.random.rand(self.deviceNum)/5
+        #return (np.random.rand(self.deviceNum)*(P[T%3][1]-P[T%3][0])+P[T%3][0])/5
+        #return np.random.zipf(self.parameter,self.deviceNum)/100
+        res=np.random.normal(P[T%3],V[T%3],self.deviceNum)
+        for i in range(res.shape[0]):
+            if res[i]>1:
+                res[i]=0.9
+            if res[i]<0:
+                res[i]=0.1
+        return res
         #return np.array([0.1,0.1,0.1])
 
     def getDataSizeDistribution(self):
@@ -41,6 +55,8 @@ class DeviceManager:
         '''
         #return np.random.rand(self.deviceNum)
         #return f.pdf(np.random.uniform(0,4,self.deviceNum), 1, 1)
+        #return np.random.zipf(1.5,self.deviceNum)
+        #return np.random.zipf(1.5,self.deviceNum)
         if self.distribution=='normal':
             return (np.random.rand(self.deviceNum)*(self.parameter[1]-self.parameter[0])+self.parameter[0])
         elif self.distribution=='f':
@@ -443,27 +459,30 @@ def greedy():
 #-----------------Main Process------------------#
 
 # do numbers of times linear programming to evaluate the average performance
-times=25
-parameter=[[0,1],[1,2],[2,3],[1,1],[8,3],[20,20],1.5,2,3]
+times=10
+parameter=[[1,1],[1,1],[1,1],[8,3],[8,3],[8,3],[20,20],[20,20],[20,20]]
+#parameter=[2.5,2.5,2.5,3,3,3,3.5,3.5,3.5]
 #trace=open("trace_best.txt","w")
 timeConvex=[]
 timeGreedy=[]
 timeLinear=[]
 #for t in range(len(deviceNumInformation)):
 #for t in range(0,1,1):
-for r in range(len(ratios)):
-#for r in range(len(parameter)):
-    # t=0
+#for r in range(len(ratios)):
+for r in range(len(parameter)):
+    t=0
+    T=r
     # if r<3:
     #     distribution='normal'
-    #     ratio=0.3
+    #     ratio=0.5
     # elif r<6:
     #     distribution='f'
-    #     ratio=0.6
+    #     ratio=0.5
     # else:
     #     distribution='zipf'
     #     ratio=0.5
-    ratio=ratios[r]
+    ratio=0.4
+    #ratio=ratios[r]
     convexAve=[]
     linearAve=[]
     greedyAve=[]
@@ -489,7 +508,7 @@ for r in range(len(ratios)):
             continue # For debug so delete it
 
         #devices=DeviceManager(allDeviceNum,parameter[r],distribution)
-        devices=DeviceManager(allDeviceNum,2,'zipf')
+        devices=DeviceManager(allDeviceNum,parameter[r],'f')
         #allDevices.append(devices)
 
         # Prepare for the optimizer
@@ -558,13 +577,13 @@ improveConvex=(totalErrorRateConvex-totalErrorRateLinear)*100/totalErrorRateLine
 # plt.legend()
 # plt.show()
 
-plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
-plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
-plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
-plt.legend()
-plt.show()
+# plt.scatter(ratios,errorRateInformationLinear,color='r',label='Ours',marker='o')
+# plt.scatter(ratios,errorRateInformationGreedy,color='g',label='Greedy (%.2f%% higher than ours)'%improveGreedy,marker='x')
+# plt.scatter(ratios,errorRateInformationConvex,color='b',label='SLSQP Algorithm (%.2f%% higher than ours)'%improveConvex,marker='*')
+# plt.legend()
+# plt.show()
 
-plotData=open("plotData_ratio_zipf2.txt", "w")
+plotData=open("plotData_distribution_f_new2.txt", "w")
 print(errorRateInformationLinear,file=plotData)
 print(errorRateInformationGreedy,file=plotData)
 print(errorRateInformationConvex,file=plotData)
@@ -583,15 +602,15 @@ print(errorRateInformationConvex,file=plotData)
 # Bar plot
 #xtext=['normal distribution with high variance','normal distribution with middle variance','normal distribution with low variance',
 #       'F distribution with high bias','F distribution with middle bias','F distribution with low bias']
-# xtext=['Normal-1','Normal-2','Normal-3','F-1','F-2','F-3','zipf-1','zipf-2','zipf-3']
-# xposition=np.arange(len(parameter))
-# bar_width=0.25
-# plt.bar(x=xposition, height=errorRateInformationConvex, label='SLSQP Algorithm', color='b',align='center',width=bar_width)
-# plt.bar(x=xposition+bar_width, height=errorRateInformationGreedy, label='Greedy', color='g',align='center',width=bar_width)
-# plt.bar(x=xposition+2*bar_width, height=errorRateInformationLinear, label='Ours', color='r',align='center',width=bar_width)
-# plt.xticks(xposition+bar_width,xtext,rotation=45)
-# plt.legend()
-#plt.show()
+xtext=['low','middle','high','low','middle','high','low','middle','high']
+xposition=np.arange(len(parameter))
+bar_width=0.25
+plt.bar(x=xposition, height=errorRateInformationConvex, label='SLSQP Algorithm', color='b',align='center',width=bar_width)
+plt.bar(x=xposition+bar_width, height=errorRateInformationGreedy, label='Greedy', color='g',align='center',width=bar_width)
+plt.bar(x=xposition+2*bar_width, height=errorRateInformationLinear, label='Ours', color='r',align='center',width=bar_width)
+plt.xticks(xposition+bar_width,xtext,rotation=45)
+plt.legend()
+plt.show()
 
 # Box plot
 # boxes=[]

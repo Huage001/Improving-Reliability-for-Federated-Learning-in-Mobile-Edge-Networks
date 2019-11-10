@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 #fname='plotData_main_zipf1.txt'
-fname='uniform-ratio.txt'
+fname='f-ratio.txt'
 
 file=open(fname, 'r')
 lines=file.readlines()
