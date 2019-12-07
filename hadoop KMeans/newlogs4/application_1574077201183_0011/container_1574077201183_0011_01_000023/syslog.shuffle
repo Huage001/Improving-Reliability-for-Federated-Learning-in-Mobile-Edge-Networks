@@ -1,0 +1,74 @@
+2019-11-18 06:48:43,734 INFO [main] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: MergerManager: memoryLimit=535088320, maxSingleShuffleLimit=133772080, mergeThreshold=353158304, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2019-11-18 06:48:43,737 INFO [EventFetcher for fetching Map Completion Events] org.apache.hadoop.mapreduce.task.reduce.EventFetcher: attempt_1574077201183_0011_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2019-11-18 06:48:43,747 INFO [EventFetcher for fetching Map Completion Events] org.apache.hadoop.mapreduce.task.reduce.EventFetcher: attempt_1574077201183_0011_r_000000_0: Got 20 new map-outputs
+2019-11-18 06:48:43,881 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000009_0 decomp: 14072554 len: 14072558 to MEMORY
+2019-11-18 06:48:43,892 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 14072554 bytes from map-output for attempt_1574077201183_0011_m_000009_0
+2019-11-18 06:48:43,894 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 14072554, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->14072554
+2019-11-18 06:48:43,897 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000008_0 decomp: 14530934 len: 14530938 to MEMORY
+2019-11-18 06:48:43,907 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 14530934 bytes from map-output for attempt_1574077201183_0011_m_000008_0
+2019-11-18 06:48:43,907 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 14530934, inMemoryMapOutputs.size() -> 2, commitMemory -> 14072554, usedMemory ->28603488
+2019-11-18 06:48:43,907 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.ShuffleSchedulerImpl: drcn:13562 freed by fetcher#5 in 162ms
+2019-11-18 06:48:43,921 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000019_0 decomp: 7450874 len: 7450878 to MEMORY
+2019-11-18 06:48:43,926 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 7450874 bytes from map-output for attempt_1574077201183_0011_m_000019_0
+2019-11-18 06:48:43,927 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 7450874, inMemoryMapOutputs.size() -> 3, commitMemory -> 28603488, usedMemory ->36054362
+2019-11-18 06:48:43,928 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000015_0 decomp: 9591428 len: 9591432 to MEMORY
+2019-11-18 06:48:43,934 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 9591428 bytes from map-output for attempt_1574077201183_0011_m_000015_0
+2019-11-18 06:48:43,934 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 9591428, inMemoryMapOutputs.size() -> 4, commitMemory -> 36054362, usedMemory ->45645790
+2019-11-18 06:48:43,935 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000018_0 decomp: 8100302 len: 8100306 to MEMORY
+2019-11-18 06:48:43,941 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 8100302 bytes from map-output for attempt_1574077201183_0011_m_000018_0
+2019-11-18 06:48:43,941 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 8100302, inMemoryMapOutputs.size() -> 5, commitMemory -> 45645790, usedMemory ->53746092
+2019-11-18 06:48:43,942 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000017_0 decomp: 8736236 len: 8736240 to MEMORY
+2019-11-18 06:48:43,948 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 8736236 bytes from map-output for attempt_1574077201183_0011_m_000017_0
+2019-11-18 06:48:43,948 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 8736236, inMemoryMapOutputs.size() -> 6, commitMemory -> 53746092, usedMemory ->62482328
+2019-11-18 06:48:43,949 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000014_0 decomp: 10567234 len: 10567238 to MEMORY
+2019-11-18 06:48:43,956 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 10567234 bytes from map-output for attempt_1574077201183_0011_m_000014_0
+2019-11-18 06:48:43,956 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 10567234, inMemoryMapOutputs.size() -> 7, commitMemory -> 62482328, usedMemory ->73049562
+2019-11-18 06:48:43,960 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000013_0 decomp: 11983766 len: 11983770 to MEMORY
+2019-11-18 06:48:43,967 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 11983766 bytes from map-output for attempt_1574077201183_0011_m_000013_0
+2019-11-18 06:48:43,967 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 11983766, inMemoryMapOutputs.size() -> 8, commitMemory -> 73049562, usedMemory ->85033328
+2019-11-18 06:48:43,972 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000012_0 decomp: 12465468 len: 12465472 to MEMORY
+2019-11-18 06:48:43,980 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 12465468 bytes from map-output for attempt_1574077201183_0011_m_000012_0
+2019-11-18 06:48:43,980 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 12465468, inMemoryMapOutputs.size() -> 9, commitMemory -> 85033328, usedMemory ->97498796
+2019-11-18 06:48:43,984 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000010_0 decomp: 12709426 len: 12709430 to MEMORY
+2019-11-18 06:48:43,992 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 12709426 bytes from map-output for attempt_1574077201183_0011_m_000010_0
+2019-11-18 06:48:43,993 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 12709426, inMemoryMapOutputs.size() -> 10, commitMemory -> 97498796, usedMemory ->110208222
+2019-11-18 06:48:43,999 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000005_0 decomp: 17548494 len: 17548498 to MEMORY
+2019-11-18 06:48:44,011 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 17548494 bytes from map-output for attempt_1574077201183_0011_m_000005_0
+2019-11-18 06:48:44,011 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 17548494, inMemoryMapOutputs.size() -> 11, commitMemory -> 110208222, usedMemory ->127756716
+2019-11-18 06:48:44,023 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000016_0 decomp: 8757140 len: 8757144 to MEMORY
+2019-11-18 06:48:44,029 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 8757140 bytes from map-output for attempt_1574077201183_0011_m_000016_0
+2019-11-18 06:48:44,029 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 8757140, inMemoryMapOutputs.size() -> 12, commitMemory -> 127756716, usedMemory ->136513856
+2019-11-18 06:48:44,041 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000007_0 decomp: 15194844 len: 15194848 to MEMORY
+2019-11-18 06:48:44,051 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 15194844 bytes from map-output for attempt_1574077201183_0011_m_000007_0
+2019-11-18 06:48:44,051 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 15194844, inMemoryMapOutputs.size() -> 13, commitMemory -> 136513856, usedMemory ->151708700
+2019-11-18 06:48:44,062 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000011_0 decomp: 12592244 len: 12592248 to MEMORY
+2019-11-18 06:48:44,069 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 12592244 bytes from map-output for attempt_1574077201183_0011_m_000011_0
+2019-11-18 06:48:44,069 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 12592244, inMemoryMapOutputs.size() -> 14, commitMemory -> 151708700, usedMemory ->164300944
+2019-11-18 06:48:44,175 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000004_0 decomp: 17657980 len: 17657984 to MEMORY
+2019-11-18 06:48:44,187 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 17657980 bytes from map-output for attempt_1574077201183_0011_m_000004_0
+2019-11-18 06:48:44,188 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 17657980, inMemoryMapOutputs.size() -> 15, commitMemory -> 164300944, usedMemory ->181958924
+2019-11-18 06:48:44,194 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000001_0 decomp: 18622632 len: 18622636 to MEMORY
+2019-11-18 06:48:44,206 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 18622632 bytes from map-output for attempt_1574077201183_0011_m_000001_0
+2019-11-18 06:48:44,206 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 18622632, inMemoryMapOutputs.size() -> 16, commitMemory -> 181958924, usedMemory ->200581556
+2019-11-18 06:48:44,217 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000006_0 decomp: 15610480 len: 15610484 to MEMORY
+2019-11-18 06:48:44,227 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 15610480 bytes from map-output for attempt_1574077201183_0011_m_000006_0
+2019-11-18 06:48:44,227 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 15610480, inMemoryMapOutputs.size() -> 17, commitMemory -> 200581556, usedMemory ->216192036
+2019-11-18 06:48:44,235 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000000_0 decomp: 18744260 len: 18744264 to MEMORY
+2019-11-18 06:48:44,247 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 18744260 bytes from map-output for attempt_1574077201183_0011_m_000000_0
+2019-11-18 06:48:44,247 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 18744260, inMemoryMapOutputs.size() -> 18, commitMemory -> 216192036, usedMemory ->234936296
+2019-11-18 06:48:44,258 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000003_0 decomp: 17931890 len: 17931894 to MEMORY
+2019-11-18 06:48:44,269 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 17931890 bytes from map-output for attempt_1574077201183_0011_m_000003_0
+2019-11-18 06:48:44,269 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 17931890, inMemoryMapOutputs.size() -> 19, commitMemory -> 234936296, usedMemory ->252868186
+2019-11-18 06:48:44,280 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.Fetcher: fetcher#5 about to shuffle output of map attempt_1574077201183_0011_m_000002_0 decomp: 18530618 len: 18530622 to MEMORY
+2019-11-18 06:48:44,291 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput: Read 18530618 bytes from map-output for attempt_1574077201183_0011_m_000002_0
+2019-11-18 06:48:44,291 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 18530618, inMemoryMapOutputs.size() -> 20, commitMemory -> 252868186, usedMemory ->271398804
+2019-11-18 06:48:44,291 INFO [fetcher#5] org.apache.hadoop.mapreduce.task.reduce.ShuffleSchedulerImpl: drcn:13562 freed by fetcher#5 in 384ms
+2019-11-18 06:48:44,291 INFO [EventFetcher for fetching Map Completion Events] org.apache.hadoop.mapreduce.task.reduce.EventFetcher: EventFetcher is interrupted.. Returning
+2019-11-18 06:48:44,296 INFO [main] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: finalMerge called with 20 in-memory map-outputs and 0 on-disk map-outputs
+2019-11-18 06:48:45,732 INFO [main] org.apache.hadoop.mapred.Merger: Merging 20 sorted segments
+2019-11-18 06:48:45,732 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 20 segments left of total size: 271398684 bytes
+2019-11-18 06:48:49,586 INFO [main] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: Merged 20 segments, 271398804 bytes to disk to satisfy reduce memory limit
+2019-11-18 06:48:49,586 INFO [main] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: Merging 1 files, 271398770 bytes from disk
+2019-11-18 06:48:49,587 INFO [main] org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl: Merging 0 segments, 0 bytes from memory into reduce
+2019-11-18 06:48:49,587 INFO [main] org.apache.hadoop.mapred.Merger: Merging 1 sorted segments
+2019-11-18 06:48:49,590 INFO [main] org.apache.hadoop.mapred.Merger: Down to the last merge-pass, with 1 segments left of total size: 271398760 bytes

@@ -1,0 +1,24 @@
+ls -l:
+total 32
+-rw-r--r-- 1 drcn drcn  129 Nov 17 09:21 container_tokens
+-rwx------ 1 drcn drcn  772 Nov 17 09:21 default_container_executor_session.sh
+-rwx------ 1 drcn drcn  827 Nov 17 09:21 default_container_executor.sh
+lrwxrwxrwx 1 drcn drcn  131 Nov 17 09:21 job.jar -> /home/drcn/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/drcn/appcache/application_1573969336865_0033/filecache/11/job.jar
+lrwxrwxrwx 1 drcn drcn  131 Nov 17 09:21 job.xml -> /home/drcn/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/drcn/appcache/application_1573969336865_0033/filecache/13/job.xml
+-rwx------ 1 drcn drcn 6487 Nov 17 09:21 launch_container.sh
+drwx--x--- 2 drcn drcn 4096 Nov 17 09:21 tmp
+find -L . -maxdepth 5 -ls:
+  1191433      4 drwx--x---   3 drcn     drcn         4096 Nov 17 09:21 .
+  1191463      4 -rw-r--r--   1 drcn     drcn           16 Nov 17 09:21 ./.default_container_executor_session.sh.crc
+  1191452      8 -rwx------   1 drcn     drcn         6487 Nov 17 09:21 ./launch_container.sh
+  1191448      4 -rw-r--r--   1 drcn     drcn           12 Nov 17 09:21 ./.container_tokens.crc
+  1060282    176 -r-x------   1 drcn     drcn       178317 Nov 17 09:21 ./job.xml
+  1191469      4 -rw-r--r--   1 drcn     drcn           16 Nov 17 09:21 ./.default_container_executor.sh.crc
+  1191447      4 -rw-r--r--   1 drcn     drcn          129 Nov 17 09:21 ./container_tokens
+  1191458      4 -rwx------   1 drcn     drcn          772 Nov 17 09:21 ./default_container_executor_session.sh
+  1191467      4 -rwx------   1 drcn     drcn          827 Nov 17 09:21 ./default_container_executor.sh
+  1191436      4 drwx--x---   2 drcn     drcn         4096 Nov 17 09:21 ./tmp
+  1060263      4 drwx------   2 drcn     drcn         4096 Nov 17 09:21 ./job.jar
+  1060255  95348 -r-x------   1 drcn     drcn     97635464 Nov 17 09:21 ./job.jar/job.jar
+  1191456      4 -rw-r--r--   1 drcn     drcn           60 Nov 17 09:21 ./.launch_container.sh.crc
+broken symlinks(find -L . -maxdepth 5 -type l -ls):

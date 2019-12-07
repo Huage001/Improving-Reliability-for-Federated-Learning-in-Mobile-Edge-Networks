@@ -1,0 +1,28 @@
+ls -l:
+total 36
+-rw-r--r-- 1 drcn drcn  105 Nov 17 09:13 container_tokens
+-rwx------ 1 drcn drcn  772 Nov 17 09:13 default_container_executor_session.sh
+-rwx------ 1 drcn drcn  827 Nov 17 09:13 default_container_executor.sh
+lrwxrwxrwx 1 drcn drcn  131 Nov 17 09:13 job.jar -> /home/drcn/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/drcn/appcache/application_1573969336865_0023/filecache/11/job.jar
+drwxrwxr-x 2 drcn drcn 4096 Nov 17 09:13 jobSubmitDir
+lrwxrwxrwx 1 drcn drcn  131 Nov 17 09:13 job.xml -> /home/drcn/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/drcn/appcache/application_1573969336865_0023/filecache/13/job.xml
+-rwx------ 1 drcn drcn 6506 Nov 17 09:13 launch_container.sh
+drwx--x--- 2 drcn drcn 4096 Nov 17 09:13 tmp
+find -L . -maxdepth 5 -ls:
+  1060271      4 drwx--x---   4 drcn     drcn         4096 Nov 17 09:13 .
+  1060296      4 -rw-r--r--   1 drcn     drcn           16 Nov 17 09:13 ./.default_container_executor_session.sh.crc
+  1060293      8 -rwx------   1 drcn     drcn         6506 Nov 17 09:13 ./launch_container.sh
+  1060291      4 -rw-r--r--   1 drcn     drcn           12 Nov 17 09:13 ./.container_tokens.crc
+  1060286    176 -r-x------   1 drcn     drcn       178317 Nov 17 09:13 ./job.xml
+  1060298      4 -rw-r--r--   1 drcn     drcn           16 Nov 17 09:13 ./.default_container_executor.sh.crc
+  1060290      4 -rw-r--r--   1 drcn     drcn          105 Nov 17 09:13 ./container_tokens
+  1060295      4 -rwx------   1 drcn     drcn          772 Nov 17 09:13 ./default_container_executor_session.sh
+  1060299      4 drwxrwxr-x   2 drcn     drcn         4096 Nov 17 09:13 ./jobSubmitDir
+  1060274      4 -r-x------   1 drcn     drcn          265 Nov 17 09:13 ./jobSubmitDir/job.splitmetainfo
+  1060282      4 -r-x------   1 drcn     drcn         2398 Nov 17 09:13 ./jobSubmitDir/job.split
+  1060297      4 -rwx------   1 drcn     drcn          827 Nov 17 09:13 ./default_container_executor.sh
+  1060289      4 drwx--x---   2 drcn     drcn         4096 Nov 17 09:13 ./tmp
+  1060279      4 drwx------   2 drcn     drcn         4096 Nov 17 09:13 ./job.jar
+  1060277  95348 -r-x------   1 drcn     drcn     97635464 Nov 17 09:13 ./job.jar/job.jar
+  1060294      4 -rw-r--r--   1 drcn     drcn           60 Nov 17 09:13 ./.launch_container.sh.crc
+broken symlinks(find -L . -maxdepth 5 -type l -ls):
