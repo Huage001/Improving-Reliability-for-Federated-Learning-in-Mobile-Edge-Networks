@@ -1,0 +1,24 @@
+ls -l:
+total 32
+-rw-r--r-- 1 ccgrid ccgrid  129 Dec  9 19:51 container_tokens
+-rwx------ 1 ccgrid ccgrid  782 Dec  9 19:51 default_container_executor_session.sh
+-rwx------ 1 ccgrid ccgrid  837 Dec  9 19:51 default_container_executor.sh
+lrwxrwxrwx 1 ccgrid ccgrid  135 Dec  9 19:51 job.jar -> /home/ccgrid/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/ccgrid/appcache/application_1575881662489_0084/filecache/11/job.jar
+lrwxrwxrwx 1 ccgrid ccgrid  135 Dec  9 19:51 job.xml -> /home/ccgrid/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/ccgrid/appcache/application_1575881662489_0084/filecache/13/job.xml
+-rwx------ 1 ccgrid ccgrid 6605 Dec  9 19:51 launch_container.sh
+drwx--x--- 2 ccgrid ccgrid 4096 Dec  9 19:51 tmp
+find -L . -maxdepth 5 -ls:
+   537877      4 drwx--x---   3 ccgrid   ccgrid       4096 Dec  9 19:51 .
+   537878      4 drwx--x---   2 ccgrid   ccgrid       4096 Dec  9 19:51 ./tmp
+   537866      4 drwx------   2 ccgrid   ccgrid       4096 Dec  9 19:51 ./job.jar
+   537861  95348 -r-x------   1 ccgrid   ccgrid   97635464 Dec  9 19:51 ./job.jar/job.jar
+   537902      4 -rwx------   1 ccgrid   ccgrid        837 Dec  9 19:51 ./default_container_executor.sh
+   537880      4 -rw-r--r--   1 ccgrid   ccgrid         12 Dec  9 19:51 ./.container_tokens.crc
+   537879      4 -rw-r--r--   1 ccgrid   ccgrid        129 Dec  9 19:51 ./container_tokens
+   537890      4 -rwx------   1 ccgrid   ccgrid        782 Dec  9 19:51 ./default_container_executor_session.sh
+   537881      8 -rwx------   1 ccgrid   ccgrid       6605 Dec  9 19:51 ./launch_container.sh
+   537883      4 -rw-r--r--   1 ccgrid   ccgrid         60 Dec  9 19:51 ./.launch_container.sh.crc
+   537905      4 -rw-r--r--   1 ccgrid   ccgrid         16 Dec  9 19:51 ./.default_container_executor.sh.crc
+   537885    176 -r-x------   1 ccgrid   ccgrid     178437 Dec  9 19:51 ./job.xml
+   537901      4 -rw-r--r--   1 ccgrid   ccgrid         16 Dec  9 19:51 ./.default_container_executor_session.sh.crc
+broken symlinks(find -L . -maxdepth 5 -type l -ls):

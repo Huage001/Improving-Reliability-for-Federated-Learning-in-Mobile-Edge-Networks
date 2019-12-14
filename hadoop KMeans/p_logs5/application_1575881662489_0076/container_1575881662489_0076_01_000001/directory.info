@@ -1,0 +1,28 @@
+ls -l:
+total 36
+-rw-r--r-- 1 ccgrid ccgrid  105 Dec  9 19:47 container_tokens
+-rwx------ 1 ccgrid ccgrid  782 Dec  9 19:47 default_container_executor_session.sh
+-rwx------ 1 ccgrid ccgrid  837 Dec  9 19:47 default_container_executor.sh
+lrwxrwxrwx 1 ccgrid ccgrid  135 Dec  9 19:47 job.jar -> /home/ccgrid/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/ccgrid/appcache/application_1575881662489_0076/filecache/11/job.jar
+drwxrwxr-x 2 ccgrid ccgrid 4096 Dec  9 19:47 jobSubmitDir
+lrwxrwxrwx 1 ccgrid ccgrid  135 Dec  9 19:47 job.xml -> /home/ccgrid/Desktop/hadoop/hadoop-3.0.0/tmp/nm-local-dir/usercache/ccgrid/appcache/application_1575881662489_0076/filecache/13/job.xml
+-rwx------ 1 ccgrid ccgrid 6628 Dec  9 19:47 launch_container.sh
+drwx--x--- 2 ccgrid ccgrid 4096 Dec  9 19:47 tmp
+find -L . -maxdepth 5 -ls:
+   537851      4 drwx--x---   4 ccgrid   ccgrid       4096 Dec  9 19:47 .
+   537894      4 drwx--x---   2 ccgrid   ccgrid       4096 Dec  9 19:47 ./tmp
+   537870      4 drwx------   2 ccgrid   ccgrid       4096 Dec  9 19:47 ./job.jar
+   537866  95348 -r-x------   1 ccgrid   ccgrid   97635464 Dec  9 19:47 ./job.jar/job.jar
+   537903      4 -rwx------   1 ccgrid   ccgrid        837 Dec  9 19:47 ./default_container_executor.sh
+   537897      4 -rw-r--r--   1 ccgrid   ccgrid         12 Dec  9 19:47 ./.container_tokens.crc
+   537896      4 -rw-r--r--   1 ccgrid   ccgrid        105 Dec  9 19:47 ./container_tokens
+   537901      4 -rwx------   1 ccgrid   ccgrid        782 Dec  9 19:47 ./default_container_executor_session.sh
+   537898      8 -rwx------   1 ccgrid   ccgrid       6628 Dec  9 19:47 ./launch_container.sh
+   537899      4 -rw-r--r--   1 ccgrid   ccgrid         60 Dec  9 19:47 ./.launch_container.sh.crc
+   537904      4 -rw-r--r--   1 ccgrid   ccgrid         16 Dec  9 19:47 ./.default_container_executor.sh.crc
+   537905      4 drwxrwxr-x   2 ccgrid   ccgrid       4096 Dec  9 19:47 ./jobSubmitDir
+   537887      4 -r-x------   1 ccgrid   ccgrid       3966 Dec  9 19:47 ./jobSubmitDir/job.split
+   537856      4 -r-x------   1 ccgrid   ccgrid        486 Dec  9 19:47 ./jobSubmitDir/job.splitmetainfo
+   537892    176 -r-x------   1 ccgrid   ccgrid     179208 Dec  9 19:47 ./job.xml
+   537902      4 -rw-r--r--   1 ccgrid   ccgrid         16 Dec  9 19:47 ./.default_container_executor_session.sh.crc
+broken symlinks(find -L . -maxdepth 5 -type l -ls):
